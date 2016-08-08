@@ -59,32 +59,34 @@ void BH1750::configure(uint8_t mode) {
 
 uint16_t BH1750::readLightLevel(void) {
 
-  uint16_t level;
+  uint16_t level = NAN;
 
   Wire.beginTransmission(BH1750_I2CADDR);
   Wire.requestFrom(BH1750_I2CADDR, 2);
-#if (ARDUINO >= 100)
-  level = Wire.read();
-  level <<= 8;
-  level |= Wire.read();
-#else
-  level = Wire.receive();
-  level <<= 8;
-  level |= Wire.receive();
-#endif
-  Wire.endTransmission();
+  if(Wire.available() ){
+    #if (ARDUINO >= 100)
+      level = Wire.read();
+      level <<= 8;
+      level |= Wire.read();
+    #else
+      level = Wire.receive();
+      level <<= 8;
+      level |= Wire.receive();
+    #endif
+      Wire.endTransmission();
 
-#if BH1750_DEBUG == 1
-  Serial.print("Raw light level: ");
-  Serial.println(level);
-#endif
+    #if BH1750_DEBUG == 1
+      Serial.print("Raw light level: ");
+      Serial.println(level);
+    #endif
 
-  level = level/1.2; // convert to lux
+      level = level/1.2; // convert to lux
 
-#if BH1750_DEBUG == 1
-  Serial.print("Light level: ");
-  Serial.println(level);
-#endif
+    #if BH1750_DEBUG == 1
+      Serial.print("Light level: ");
+      Serial.println(level);
+    #endif
+  }
   return level;
 }
 
